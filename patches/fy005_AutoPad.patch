@@ -1,0 +1,107 @@
+diff -ur trdp.orig/trdp/src/common/trdp_mdcom.c trdp/trdp/src/common/trdp_mdcom.c
+--- trdp.orig/trdp/src/common/trdp_mdcom.c	2021-08-10 10:51:21.151158087 +0300
++++ trdp/trdp/src/common/trdp_mdcom.c	2021-08-10 11:50:29.106152091 +0300
+@@ -990,15 +990,30 @@
+ {
+     VOS_ERR_T   err         = VOS_NO_ERR;
+     UINT32      tmpSndSize  = 0u;
++    UINT32      sendSize    = 0u;
+ 
+     if ((pElement->pktFlags & TRDP_FLAGS_TCP) != 0)
+     {
+         tmpSndSize = pElement->sendSize;
+-
++        sendSize = pElement->grossSize;
+         pElement->sendSize = pElement->grossSize - tmpSndSize;
+ 
++#ifdef TRDP_MD_AUTOPAD
++        UINT8 buffer[sizeof(MD_PACKET_T) + 8] = {};
++        memcpy(buffer, ((UINT8 *)&pElement->pPacket->frameHead) + tmpSndSize, pElement->sendSize);
++
++        if (pElement->sendSize == pElement->grossSize)
++        {
++           UINT32 pad = ((4 - (pElement->dataSize & 3)) & 3) + 4;
++           pElement->sendSize += pad;
++           sendSize += pad;
++        }
++
++        err = vos_sockSendTCP(mdSock, buffer, &pElement->sendSize);
++#else
+         err = vos_sockSendTCP(mdSock, ((UINT8 *)&pElement->pPacket->frameHead) + tmpSndSize, &pElement->sendSize);
+         pElement->sendSize = tmpSndSize + pElement->sendSize;
++#endif
+     }
+     else
+     {
+@@ -1030,7 +1045,7 @@
+         }
+     }
+ 
+-    if ((pElement->sendSize) != pElement->grossSize)
++    if ((pElement->sendSize) != sendSize)
+     {
+         vos_printLog(VOS_LOG_INFO, "vos_sockSend%s incomplete (Socket: %d, Port: %d)\n",
+                      (pElement->pktFlags & TRDP_FLAGS_TCP) ? "TCP" : "UDP", (int) mdSock, (unsigned int) port);
+@@ -1142,6 +1157,9 @@
+         {
+             /* Get the rest of the message length */
+             dataSize = vos_ntohl(pElement->pPacket->frameHead.datasetLength);
++#ifdef TRDP_MD_AUTOPAD
++            dataSize += ((4 - (dataSize & 3)) & 3) + 4;
++#endif
+ 
+             readDataSize        = trdp_packetSizeMD(dataSize - sizeof(MD_HEADER_T));
+             pElement->grossSize = trdp_packetSizeMD(dataSize);
+@@ -1152,6 +1170,9 @@
+         {
+             /* Calculate the data size that is pending to read */
+             dataSize = vos_ntohl(appHandle->uncompletedTCP[socketIndex]->pPacket->frameHead.datasetLength);
++#ifdef TRDP_MD_AUTOPAD
++            dataSize += ((4 - (dataSize & 3)) & 3) + 4;
++#endif
+ 
+             pElement->dataSize  = dataSize;
+             pElement->grossSize = trdp_packetSizeMD(dataSize);
+diff -ur trdp.orig/trdp/src/common/trdp_pdcom.c trdp/trdp/src/common/trdp_pdcom.c
+--- trdp.orig/trdp/src/common/trdp_pdcom.c	2021-08-10 10:51:21.147156086 +0300
++++ trdp/trdp/src/common/trdp_pdcom.c	2021-08-10 11:58:44.846152091 +0300
+@@ -1491,6 +1491,22 @@
+         pPacket->pullIpAddress = 0u;
+     }
+ 
++    UINT32 sendSize = pPacket->grossSize;
++
++#ifdef TRDP_MD_AUTOPAD
++    UINT8 buffer[sizeof(PD_PACKET_T) + 4] = {};
++    memcpy(buffer, &pPacket->pFrame->frameHead, pPacket->grossSize);
++
++    pPacket->sendSize = pPacket->grossSize + 4;
++    sendSize += 4;
++
++    err = vos_sockSendUDP(pdSock,
++                          buffer,
++                          &pPacket->sendSize,
++                          destIp,
++                          port);
++#else
++
+     pPacket->sendSize = pPacket->grossSize;
+ 
+     err = vos_sockSendUDP(pdSock,
+@@ -1498,6 +1514,7 @@
+                           &pPacket->sendSize,
+                           destIp,
+                           port);
++#endif
+ 
+     if (err != VOS_NO_ERR)
+     {
+@@ -1505,7 +1522,7 @@
+         return TRDP_IO_ERR;
+     }
+ 
+-    if (pPacket->sendSize != pPacket->grossSize)
++    if (pPacket->sendSize != sendSize)
+     {
+         vos_printLogStr(VOS_LOG_ERROR, "trdp_pdSend incomplete\n");
+         return TRDP_IO_ERR;

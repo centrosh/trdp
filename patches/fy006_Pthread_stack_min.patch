@@ -1,0 +1,22 @@
+On recent GCC/pthread (e.g. aarch64-poky-linux-gcc (GCC) 11.3.0),
+the #define PTHREAD_STACK_MIN has changed and it is not a constant anymore.
+It now cause build issue like this:
+
+trdp/src/vos/posix/vos_thread.c:79:39: error: initializer element is not constant
+const size_t    cDefaultStackSize   = 4u * PTHREAD_STACK_MIN;
+
+
+
+Index: thirdparty.protocol.trdp/trdp/src/vos/posix/vos_thread.c
+===================================================================
+--- thirdparty.protocol.trdp.orig/trdp/src/vos/posix/vos_thread.c
++++ thirdparty.protocol.trdp/trdp/src/vos/posix/vos_thread.c
+@@ -76,7 +76,7 @@
+ #define PTHREAD_MUTEX_RECURSIVE  PTHREAD_MUTEX_RECURSIVE_NP     /*lint !e652 Does Lint ignore the #ifndef ? */
+ #endif
+ 
+-const size_t    cDefaultStackSize   = 4u * PTHREAD_STACK_MIN;
++#define         cDefaultStackSize   (4u * PTHREAD_STACK_MIN)
+ const UINT32    cMutextMagic        = 0x1234FEDCu;
+ 
+ int             vosThreadInitialised = FALSE;

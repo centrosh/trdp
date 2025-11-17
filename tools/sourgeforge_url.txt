@@ -1,0 +1,21 @@
+Here are listed some sourceforge repository URLs that could be interesting.
+
+
+See file at a revision (e.g. 1160):
+http://sourceforge.net/p/tcnopen/trdp/1160/tree/trunk/trdp/src/vos/common/vos_mem.c
+
+Download a file at a revision (e.g. 1160):
+http://sourceforge.net/p/tcnopen/trdp/1160/tree/trunk/trdp/src/vos/common/vos_mem.c?format=raw
+
+See a ticket (e.g. 23):
+http://sourceforge.net/p/tcnopen/tickets/23/
+
+Diff on a revision:
+http://sourceforge.net/p/tcnopen/trdp/1160/
+
+History of revisions :
+http://sourceforge.net/p/tcnopen/trdp/1170/log/?path=
+
+
+To import changes (copy downloaded file with change and then check with a diff):
+rm -rf trdp.old ; cp -rf trdp trdp.old ; echo "Do change and press enter when done" ; read tmp ; meld trdp.old trdp

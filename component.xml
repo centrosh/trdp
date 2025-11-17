@@ -1,0 +1,41 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<component xmlns:make="tools.xpact.make">
+   Library implementing the TRDP (Train Real-time Data Protocol) protcol
+    developped by the TCNOpen initiative (http://www.tcnopen.eu) 
+    for IEC61375 standardized communication
+   Source code got with the following command: 
+      svn export http://svn.code.sf.net/p/tcnopen/trdp/tags/trdp/&lt;version&gt; trdp-&lt;version&gt;
+   @author rsd
+   @safety None
+   @license MPL v2
+
+   <requires>
+      thirdparty.libxml2
+      thirdparty.zlib
+   </requires>
+
+   <make:include visibility="public">
+      include
+      trdp/src/api
+      trdp/src/common
+      trdp/src/vos/api
+      trdp/src/vos/posix
+   </make:include>
+   
+   <make:export name="trdp.PATH" value="$(thirdparty.protocol.trdp.PATH)"/>
+
+   <meta name="trdp:autopad" type="bool" default="false">
+      <make:export name="trdp.md.autopad" value="1"/>
+   </meta>
+   
+	   <!-- Set Define value depending the project -->
+    <meta name="trdp:soa_support" type="bool" default="false">
+        Set the SAO Support active or not
+        <if test="${_}">
+            <make:export name="trdp.soa.support" value="1"/>
+        <else>
+        </else>
+        </if>
+    </meta>
+   
+</component>

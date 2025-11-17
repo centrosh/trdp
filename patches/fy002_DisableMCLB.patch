@@ -1,0 +1,11 @@
+--- trdp.orig/trdp/src/common/trdp_utils.c	2021-08-10 10:51:21.147156086 +0300
++++ trdp/trdp/src/common/trdp_utils.c	2021-08-10 10:53:37.394982725 +0300
+@@ -1172,7 +1172,7 @@
+         sock_options.reuseAddrPort  = (options & TRDP_OPTION_NO_REUSE_ADDR) ? FALSE : TRUE;
+         sock_options.nonBlocking    = (options & TRDP_OPTION_BLOCK) ? FALSE : TRUE;
+         sock_options.ttl_multicast  = (type != TRDP_SOCK_MD_TCP) ? params->ttl : 0;
+-        sock_options.no_mc_loop     = ((type != TRDP_SOCK_MD_TCP) && (options & TRDP_OPTION_NO_MC_LOOP_BACK)) ? 1 : 0;
++        sock_options.no_mc_loop     = 1; //FY((type != TRDP_SOCK_MD_TCP) && (options & TRDP_OPTION_NO_MC_LOOP_BACK)) ? 1 : 0;
+         sock_options.no_udp_crc     = ((type != TRDP_SOCK_MD_TCP) && (options & TRDP_OPTION_NO_UDP_CHK)) ? 1 : 0;
+         sock_options.vlanId         = params->vlan;
+         sock_options.ifName[0]      = 0;

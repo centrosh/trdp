@@ -1,0 +1,60 @@
+diff -ur trdp.orig/trdp/src/common/tau_dnr.c trdp/trdp/src/common/tau_dnr.c
+--- trdp.orig/trdp/src/common/tau_dnr.c	2021-08-10 10:51:21.147156086 +0300
++++ trdp/trdp/src/common/tau_dnr.c	2021-08-10 11:36:54.240923723 +0300
+@@ -118,7 +118,6 @@
+ 
+ static UINT16 sRequesterId = 1;     /* Id to identify own queries - getting rid of compiler and lint warnings */
+ 
+-#pragma mark ----------------------- Local -----------------------------
+ 
+ /***********************************************************************************************************************
+  *   Local functions
+@@ -1008,7 +1007,6 @@
+     return;
+ }
+ 
+-#pragma mark ----------------------- Public -----------------------------
+ 
+ /***********************************************************************************************************************
+  *   Public
+diff -ur trdp.orig/trdp/src/common/tau_so_if.c trdp/trdp/src/common/tau_so_if.c
+--- trdp.orig/trdp/src/common/tau_so_if.c	2021-08-10 11:35:11.327192051 +0300
++++ trdp/trdp/src/common/tau_so_if.c	2021-08-10 11:35:58.538337154 +0300
+@@ -344,7 +344,6 @@
+ }
+ 
+ 
+-#pragma mark ----------------------- Public -----------------------------
+ 
+ /**********************************************************************************************************************/
+ /*    Service Oriented API - Access the Service Registry Manager                                                      */
+diff -ur trdp.orig/trdp/src/common/tau_tti.c trdp/trdp/src/common/tau_tti.c
+--- trdp.orig/trdp/src/common/tau_tti.c	2021-08-10 11:35:11.742660479 +0300
++++ trdp/trdp/src/common/tau_tti.c	2021-08-10 11:36:06.965020634 +0300
+@@ -953,7 +953,6 @@
+     (void) tlc_process(appHandle, NULL, NULL);
+ }
+ 
+-#pragma mark ----------------------- Public -----------------------------
+ 
+ /**********************************************************************************************************************/
+ /*    Train configuration information access                                                                          */
+diff -ur trdp.orig/trdp/test/pdpatterns/trdp-pd-test.c trdp/trdp/test/pdpatterns/trdp-pd-test.c
+--- trdp.orig/trdp/test/pdpatterns/trdp-pd-test.c	2021-08-10 10:51:21.195180087 +0300
++++ trdp/trdp/test/pdpatterns/trdp-pd-test.c	2021-08-10 11:38:07.638568392 +0300
+@@ -658,15 +658,6 @@
+     printf("\033" "[0m");
+ }
+ 
+-static void _sleep_msec(int msec)
+-{
+-    struct timespec ts;
+-    ts.tv_sec = msec / 1000;
+-    ts.tv_nsec = (msec % 1000) * 1000000L;
+-    // sleep specified time
+-    nanosleep(&ts, NULL);
+-}
+-
+ #elif defined (VXWORKS)
+ void cursor_home()
+ {
