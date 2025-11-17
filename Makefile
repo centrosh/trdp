@@ -18,10 +18,15 @@ LIB_DIR := $(BUILD_DIR)/lib
 BIN_DIR := $(BUILD_DIR)/bin
 ifeq ($(PREPARE_SOURCES),yes)
 LIBXML2_CFLAGS := $(shell pkg-config --cflags libxml-2.0 2>/dev/null)
-ifeq ($(strip $(LIBXML2_CFLAGS)),)
-$(error "libxml2 headers were not found. Install libxml2-dev and ensure pkg-config is configured.")
-endif
 LIBXML2_LIBS := $(shell pkg-config --libs libxml-2.0 2>/dev/null)
+ifeq ($(strip $(LIBXML2_CFLAGS)),)
+LIBXML2_CFLAGS := $(shell xml2-config --cflags 2>/dev/null)
+LIBXML2_LIBS := $(shell xml2-config --libs 2>/dev/null)
+endif
+ifeq ($(strip $(LIBXML2_CFLAGS)),)
+LIBXML2_CFLAGS := -I/usr/include/libxml2
+LIBXML2_LIBS := -lxml2
+endif
 else
 LIBXML2_CFLAGS :=
 LIBXML2_LIBS :=
